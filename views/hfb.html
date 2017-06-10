@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>地区选择</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="hfb">
+			<div id="slider" class="mui-slider">
+				<header>
+					<a href="index.html" class="icon-back"><img src="images/back_blue.png"/></a>
+					<div id="" class="mui-slider custom">
+						<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted custom">
+							<a class="mui-control-item custom" href="#telecom">电信</a>
+							<a class="mui-control-item custom" href="#unicom">联通</a>
+							<a class="mui-control-item custom" href="#mobile">移动</a>
+						</div>
+						<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4 custom"></div>
+					</div>
+					<a href="region_list.html" class="icon-location"><span>福州</span></a>
+				</header>
+				<nav-regist></nav-regist>
+				<div class="mui-slider-group">
+					<div id="telecom" class="mui-slider-item mui-control-content mui-active">
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<a href="pdt_info.html" class="mui-navigate-right">
+									<div class="combo-icon">56</div>
+									<div>
+										<p>56元*24个月</p>
+										<p>保底消费56元</p>
+									</div>
+								</a>								
+							</li>
+							<li class="mui-table-view-cell">
+								<a class="mui-navigate-right">
+									<div class="combo-icon">56</div>
+									<div>
+										<p>56元*24个月</p>
+										<p>保底消费56元</p>
+									</div>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a class="mui-navigate-right">
+									<div class="combo-icon">56</div>
+									<div>
+										<p>56元*24个月</p>
+										<p>保底消费56元</p>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div id="unicom" class="mui-slider-item mui-control-content"></div>
+					<div id="mobile" class="mui-slider-item mui-control-content"></div>
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/nav_regist.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#hfb',
+				data: {
+					headerNavText: '选择地区'
+				}
+			})
+		</script>
+	</body>
+</html>

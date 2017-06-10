@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title></title>
+	</head>
+	<body>
+		<div id="app">
+			<!--<div id="header-nav" :header-nav-data="headerNavData"></div>-->
+			<header-nav :header-nav-data="headerNavData">
+				<p>这是父组件</p>
+			</header-nav>
+		</div>
+		<script src="../dist/bundle.js"></script>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#app',
+				data: {
+					/*headerNavData: {
+						title: '地区选择'
+					}*/
+					headerNavData: '地区选择'
+				}
+			})
+		</script>
+	</body>
+</html>

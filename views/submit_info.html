@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>登入</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="check-info">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<section v-if="submitPanel" v-cloak class="custom-content m-t-44">
+				<article>
+					<ul class="mui-table-view">
+						<li v-for="item in subListData" class="mui-table-view-cell">
+							<section v-cloak="false" class="content-body">
+								<p class="title">{{ item.title }}</p>
+								<p class="desc">{{ item.desc }}</p>
+							</section>
+							<section class="submit">
+								<submit-btn :submit-btn-data="item.submitBtnId" v-on:submit="go(item.submitBtnId.link)" :class="{notActive: item.submitBtnId.notActive}"></submit-btn>
+							</section>
+						</li>
+					</ul>					
+				</article>
+			</section>
+			
+			<!--审核状态-->
+			<section v-if="statusPanel.show" class="custom-container m-t-44 p-t-100 status-panel">
+				<div class="content-body" v-cloak>
+					<div v-if="statusPanel.certificating">
+						<section class="w-60per cotent-main">
+							<img src="images/ing.png"/>
+							<p class="span-grey text-center">工作人员正在审核，请耐心等待</p>								
+						</section>
+					</div>
+					<div v-else >
+						<section class="w-60per cotent-main">
+							<img src="images/false.png"/>
+							<p class="span-grey text-center">部分信息审核失败，请及时修改</p>
+						</section>						
+						<section class="submit-section">
+							<submit-btn :submit-btn-data="submitBtnData"></submit-btn>
+						</section>
+					</div>
+				</div>
+			</section>
+			<!--审核状态-->
+			
+			<!--加载动画-->
+			<loading v-if="loading"></loading>
+			<!--加载动画-->
+		</div>
+		
+		
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/bankData.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#check-info',
+				data: {
+					headerNavData: {
+						title: '提交审核资料',
+						goBack: true
+					},
+					subListData: [{
+						title: '第一步：核对身份信息',
+						desc: '核对身份信息防止不法分子盗用',
+						submitBtnId: {
+							disable: true,
+							notActive: true,
+							value: '步骤一',
+							link: 'check_id.html',
+							btnClass: {'mui-btn-primary': true}
+						}
+					},{
+						title: '第二步：绑定银行卡',
+						desc: '绑定银行卡，确保安全',
+						submitBtnId: {
+//							disable: true,
+							notActive: true,
+							value: '步骤二',
+							link: 'bundle_cards.html',
+							btnClass: {'mui-btn-primary': true}
+						}
+					},{
+						title: '第三步：补充联系人信息',
+						desc: '维护账户及时与您保持联系',
+						submitBtnId: {
+//							disable: true,
+							value: '步骤三',
+							link: 'add_contacts.html',
+							notActive: true,
+							btnClass: {'mui-btn-primary': true}
+						}
+					},{
+						title: '第四步：提交运营商服务密码',
+						desc: '提高审核通过率',
+						submitBtnId: {
+//							disable: true,
+							value: '步骤四',
+							link: 'submit_service_pwd.html',
+							notActive: true,
+							btnClass: {'mui-btn-primary': true}
+						}
+					}],
+					submitPanel: false,
+					statusPanel: {
+						show: false,
+						certificating: false
+					},
+					loading: false,
+					submitBtnData:{
+						value: '点击修改',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					}
+				},
+				methods: {
+					go: function(link){
+						window.location.href = link
+					}
+				}
+			})		
+		</script>
+		<!--获取当前step状态-->
+		<script type="text/javascript">
+			var url = service.config.url + api.config.certificationInfo
+			
+			var originData = {}
+			
+			var dataSet = ajaxFun.dataStringify(originData)
+			
+			var requestData = {
+				encryptionType: 1,
+				token: token_g,
+				data: dataSet.jsonData,
+				sign: dataSet.sign
+			}
+			
+			ajaxFun.common(url, 'POST', requestData, 'json', success, error, complete, beforeSend)
+
+			function success(data){
+				if(data.code == 1){
+					switch(data.data.status ){
+						case 1:
+							vm.submitPanel = true
+							break
+						case 2:
+							vm.submitPanel = false
+							vm.statusPanel.show = true
+							vm.statusPanel.certificating = true
+							break
+						case 4:
+							vm.submitPanel = false
+							vm.statusPanel.show = true
+							vm.statusPanel.certificating = false
+							break
+					}
+					console.log(data)
+					console.log(data.data.step)
+					/*vm.subListData[data.data.step - 1].submitBtnId.disable = false
+					vm.subListData[data.data.step - 1].submitBtnId.notActive = false
+					vm.subListData[data.data.step - 1].submitBtnId.value = '修改'*/
+					for(var i = 0; i < data.data.step - 1; i++){
+						vm.subListData[i].submitBtnId.disable = true
+						vm.subListData[i].submitBtnId.notActive = true
+						vm.subListData[i].submitBtnId.value = '审核中'
+					}
+				} else {
+					console.log(data.code)
+					console.log(data.msg)
+				}
+			}
+			function error(){
+				message.connError()
+			}
+			function complete(){
+				vm.loading = false
+			}
+			function beforeSend(){
+				vm.loading = true
+			}
+		</script>
+	</body>
+</html>

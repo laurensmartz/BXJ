@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="bundle-cards">
+			<!--绑定银行卡-->
+			<article v-if="bundleCardPanel" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavData"></header-nav>
+				<section class="cards-info">
+					<sub-list :sub-list-data="subListData" v-on:click="subListFun"></sub-list>
+				</section>
+				<section class="submit-section p-t-50">
+					<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submit"></submit-btn>
+				</section>
+				<p class="safe-msg">信息已安全加密，仅用于银行验证</p>
+			</article>
+			<!--绑定银行卡-->
+			
+			<!--确认申请-->
+			<section v-if="allInfoPanel" v-cloak="false" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavBack" v-on:click="goBack('allInfo')"></header-nav>
+				<section class="cards-info">
+					<sub-list :sub-list-data="subListAll"></sub-list>
+				</section>
+				<section class="submit-section p-t-50">
+					<submit-btn :submit-btn-data="applyBtnData" v-on:submit="apply"></submit-btn>
+				</section>
+				<p class="safe-msg">信息已安全加密，仅用于银行验证</p>
+			</section>
+			<!--确认申请-->
+			
+			<!--银行名称列表-->
+			<section v-if="bankNamePanel" v-cloak="false" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavBank" v-on:click="goBack('bankNamePanel')"></header-nav>
+				<sub-list :sub-list-data="subListBank" v-on:click="showBankProvince"></sub-list>
+			</section>
+			<!--银行名称列表-->
+			
+			<!--银行省级列表-->
+			<section v-if="bankProvincePanel" v-cloak="false" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavBank" v-on:click="goBack('bankProvincePanel')"></header-nav>
+				<sub-list :sub-list-data="bankProvinceList" v-on:click="showBankRegion"></sub-list>
+			</section>
+			<!--银行省级列表--->
+			
+			<!--银行地区级列表-->
+			<section v-if="bankRegionPanel" v-cloak="false" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavBank" v-on:click="goBack('bankRegionPanel')"></header-nav>
+				<sub-list :sub-list-data="bankRegionList" v-on:click="showBankCity"></sub-list>
+			</section>
+			<!--银行地区级列表--->
+			
+			<!--银行市级列表-->
+			<section v-if="bankCityPanel" v-cloak="false" class="custom-container m-t-44">
+				<header-nav :header-nav-data="headerNavBank" v-on:click="goBack('bankCityPanel')"></header-nav>
+				<sub-list :sub-list-data="bankCityList" v-on:click="getBankOpen"></sub-list>
+			</section>
+			<!--银行市区级列表--->						
+						
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/bankData.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#bundle-cards',
+				data: {
+					headerNavData: {
+						title: '绑定银行卡信息',
+						href: 'submit_info.html'
+					},
+					subListData: {
+						subList: {
+							items: [{title: '持卡人', noItemClick: true, inputText: true, inputData: '', placeHolder: '请输入真实姓名'},
+									{title: '卡号', noItemClick: true, inputText: true, inputData: '', placeHolder: '请输入银行卡号'},
+									{title: '手机号', noItemClick: true, inputText: true, inputData: '', placeHolder: '请输银行预留手机号码'},
+									{title: '开户行', noItemClick: true, rightSpan: '请选择开户行(可选项)', rightFun: 'showBankList', rightBoxClass: {'w-60per': true}, classObj: {'span-blue': true}},
+									{title: '支行', noItemClick: true, rightSpan: '', rightBoxClass: {'w-60per': true}, classObj: {'span-blue': true}}
+							]
+						}
+					},
+					submitBtnData: {
+						value: '提交',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					},
+					applyBtnData: {
+						value: '申请',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					},
+					headerNavBack: {
+						clickBack: true,
+						title: '绑定银行卡信息'
+					},
+					bundleCardPanel: true,
+					allInfoPanel: false,
+					bankNamePanel: false,
+					bankProvincePanel: false,
+					bankRegionPanel: false,
+					bankCityPanel: false,
+					subListAll: {
+						subList: {
+							items: [{title: '持卡人', rightSpan: '', rightBoxClass: {'w-60per': true}},
+									{title: '卡号', rightSpan: '', rightBoxClass: {'w-60per': true}},
+									{title: '手机号', rightSpan: '', rightBoxClass: {'w-60per': true}},
+									{title: '开户行', rightSpan: '', rightBoxClass: {'w-60per': true}},
+									{title: '支行', rightSpan: '', rightBoxClass: {'w-60per': true}}							
+							]
+						}
+					},
+					headerNavBank: {
+						clickBack: true,
+						title: '开户行选择'
+					},
+					subListBank: {
+						subList: {
+							items: []
+						}
+					},
+					bankProvinceList: {
+						subList: {
+							items: []
+						}
+					},
+					bankRegionList: {
+						subList: {
+							items: []
+						}
+					},
+					bankCityList: {
+						subList: {
+							items: []
+						}
+					},
+					bankSelect: {
+						bank_name: '',
+						province_id: '',
+						region_id: '',
+						bank_branch: '',
+						bank_branch_no: ''
+					}					
+				},
+				methods: {
+					submit: function(){
+						if(!this.subListData.subList.items[4].rightSpan){
+							mui.alert('还未选择开户行')
+							return
+						}
+						this.bundleCardPanel = false
+						this.allInfoPanel = true
+						this.subListAll.subList.items[0].rightSpan = this.subListData.subList.items[0].inputData
+						this.subListAll.subList.items[1].rightSpan = this.subListData.subList.items[1].inputData
+						this.subListAll.subList.items[2].rightSpan = this.subListData.subList.items[2].inputData
+						this.subListAll.subList.items[3].rightSpan = this.subListData.subList.items[3].rightSpan
+						this.subListAll.subList.items[4].rightSpan = this.subListData.subList.items[4].rightSpan
+					},
+					//返回
+					goBack: function(from){
+						switch(from){
+							case 'allInfo':
+								this.bundleCardPanel = true
+								this.allInfoPanel = false
+								break
+							case 'bankNamePanel':
+								this.bundleCardPanel = true
+								this.allInfoPanel = false
+								this.bankNamePanel = false
+								break
+							case 'bankProvincePanel':
+								this.bankProvincePanel = false
+								this.bankNamePanel = true
+								break
+							case 'bankRegionPanel':
+								this.bankRegionPanel = false
+								this.bankProvincePanel = true
+								break
+							case 'bankCityPanel':
+								this.bankCityPanel = false
+								this.bankRegionPanel = true
+								break
+							default:
+								console.log('error')
+						}							
+					},
+					subListFun: function(){
+						this.bundleCardPanel = false
+						this.allInfoPanel = false
+						this.bankNamePanel = true
+						
+						var url = service.config.url + api.config.bankData
+						
+						var originData = {
+							step: 1
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 0,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								var arr = []
+								
+								for(var i = 0; i < data.data.length; i++){
+									arr[i] = {title: data.data[i]['bank_name']}
+								}
+								//更新银行列表
+								vm.subListBank.subList.items = arr	
+								
+							} else {
+								console.log(data.msg)
+							}
+						}
+					},
+					showBankProvince: function(title){
+						//获取银行名称
+						this.bankSelect.bank_name = title
+						
+						var url = service.config.url + api.config.bankData
+						var originData = {
+							step: 2,
+							bank_name: title
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 0,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								var arr = []
+								
+								for(var i = 0; i < data.data.length; i++){
+									arr[i] = {title: data.data[i]['province_name'],
+										value: data.data[i]['province_id']
+									}
+								}
+								//视图显示
+								vm.bankNamePanel = false
+								vm.bankProvincePanel = true
+								//更新银行列表
+								vm.bankProvinceList.subList.items = arr
+								
+							} else {
+								console.log(data.msg)
+							}
+						}
+					},
+					showBankRegion: function(title, value){
+						this.bankSelect.province_id = value
+						var url = service.config.url + api.config.bankData
+						var originData = {
+							step: 3,
+							bank_name: this.bankSelect.bank_name,
+							province_id: value
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 0,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								var arr = []
+								
+								for(var i = 0; i < data.data.length; i++){
+									arr[i] = {title: data.data[i]['city_name'],
+										value: data.data[i]['city_id']
+									}
+								}
+								//视图显示
+								vm.bankProvincePanel = false
+								vm.bankRegionPanel = true
+								//更新银行列表
+								vm.bankRegionList.subList.items = arr
+							} else {
+								console.log(data.msg)
+							}
+						}
+					},
+					showBankCity: function(title, value){
+						console.log(title + value)
+						this.bankSelect.region_id = value
+						var url = service.config.url + api.config.bankData
+						var originData = {
+							step: 4,
+							bank_name: this.bankSelect.bank_name,
+							province_id: this.bankSelect.province_id,
+							city_id: value
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 0,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								console.log(data)
+								var arr = []
+								
+								for(var i = 0; i < data.data.length; i++){
+									arr[i] = {title: data.data[i]['bank_branch'],
+										value: data.data[i]['bank_branch_no']
+									}
+								}
+								//视图显示
+								vm.bankRegionPanel = false
+								vm.bankCityPanel = true
+								//更新银行列表
+								vm.bankCityList.subList.items = arr
+							} else {
+								console.log(data.msg)
+							}
+						}
+					},
+					getBankOpen: function(title, value){
+						this.bankSelect.bank_branch = title
+						this.bankSelect.bank_branch_no = value
+						
+						this.bankCityPanel = false
+						this.bundleCardPanel = true
+						
+						this.subListData.subList.items[3].rightSpan = this.bankSelect.bank_name + '-' + this.bankSelect.bank_branch
+						
+						this.subListData.subList.items[4].rightSpan = this.bankSelect.bank_branch
+					},
+					apply: function(){
+						var url = service.config.url + api.config.certification
+						
+						var originData = {
+							verify_code: '1234',
+							real_name: this.subListAll.subList.items[0].rightSpan,
+							bank_card_no: this.subListAll.subList.items[1].rightSpan,
+							bank_reservation_mobile: this.subListAll.subList.items[2].rightSpan,
+							bank_name: this.bankSelect.bank_name,
+							bank_subbranch: this.bankSelect.bank_branch,
+							bank_branch_no: this.bankSelect.bank_branch_no,
+							step: 2
+						}
+
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 1,
+							token: token_g,
+							sign: dataSet.sign,
+							data: dataSet.jsonData	
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code ==1 ){
+								mui.toast('申请成功')
+								setTimeout(function(){
+									window.location.href = 'submit_info.html'
+								}, 1000)
+							} else {
+								console.log(data.msg)
+							}
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

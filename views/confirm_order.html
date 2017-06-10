@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>地区选择</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="confirm-order">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="consume-use">
+				<header>消费用途</header>
+				<section>
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">
+							<span>产品信息</span>
+							<span>华为5C</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<span>产品序列号</span>
+							<span>860678943087</span>
+						</li>
+					</ul>
+				</section>
+			</article>
+			<article class="consume-detail">
+				<header>消费明细</header>
+				<section>
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">
+							<span>申请金额</span>
+							<span class="amount">￥1344.00</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<span>使用期数</span>
+							<span>24期</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<span>还款时间</span>
+							<span>每月9日</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<span>每期应还</span>
+							<span>￥56.00</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<span>分期顾问工号</span>
+							<span>18650904456</span>
+						</li>
+					</ul>
+				</section>
+			</article>
+			<section class="protocol">
+				<img src="images/choice_on.png" align="absmiddle" />
+				<span>同意分期相关协议</span>
+			</section>
+			<section class="submit">
+				<div class="mui-btn mui-btn-primary mui-btn-block custom-submit">
+					提交审核
+				</div>
+			</section>
+		</div>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#confirm-order',
+				data: {
+					headerNavData: {
+						title: '确认订单',
+						backLink: 'pdt_info.html'
+					}					
+				}
+			})
+		</script>
+	</body>
+</html>

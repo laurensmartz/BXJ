@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>百信佳</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<script type="text/javascript">
+		var token_g
+		if(!localStorage.getItem('token')){
+			window.location.href = 'login.html'
+//			console.log('11')
+		} else {
+			/*console.log('22')
+			console.log(localStorage.getItem('token'))*/
+			token_g = localStorage.getItem('token')
+		}
+	</script>
+	<body>
+		<div id="modify-pwd">
+			<header-nav :header-nav-data="headerNavData"></header-nav>			
+				<section class="m-t-44">
+					<section v-if="oldPwdForm">										
+						<sub-list :sub-list-data="subListData"></sub-list>
+						<section class="submit-section p-t-50">
+							<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submitOldPwd"></submit-btn>
+						</section>	
+					</section>
+					<section v-else >
+						<sub-list :sub-list-data="subListNewPwd"></sub-list>
+						<section class="submit-section p-t-50">
+							<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submitNewPwd"></submit-btn>
+						</section>
+					</section>
+				</section>									
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>		
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#modify-pwd',
+				data: {
+					headerNavData: {
+						title: '输入原密码',
+						href: 'setting.html'
+					},
+					subListData: {
+						subList: {
+							items: [{title: '原始密码', inputPwd: true, placeHolder: '请输入原密码', inputData: '', rightWidget: {}}]
+						}
+					},
+					subListNewPwd: {
+						subList: {
+							items: [{title: '新密码', inputPwd: true, placeHolder: '请输入新密码', inputData: '', rightWidget: {}}]
+						}
+					},
+					submitBtnData: {
+						value: '下一步',
+						link: '',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					},
+					oldPwdForm: true,
+					oldPwd: '',
+					mobile: ''
+				},
+				methods: {
+					//验证旧密码
+					submitOldPwd: function(){	
+						//获取旧密码
+						var oldPwd = this.subListData.subList.items[0].inputData
+						//将用户密码存储在数据属性里
+						this.oldPwd = oldPwd
+						//获取用户token
+//						var token = localStorage.getItem('token')
+						//配置登入参数
+						var data = {							
+							old_password: oldPwd,
+							step: 1
+						}						
+						/*//序列化参数
+						var jsonData = JSON.stringify(data)	
+						//生成签名
+						var sign = hex_md5(jsonData)*/
+						var dataSet = ajaxFun.dataStringify(data)
+						//如果密码非空且dataSet返回值为true
+						if(oldPwd && dataSet){
+							jQuery.ajax({
+								url: service.config.url + api.config.modifyPwd,
+//								url: service.config.local + '?act=Api/Member/requestUpdatePassword',
+								type: 'POST',
+								data: {				
+									encryptionType: 1,
+									token: token_g,									
+									data: dataSet.jsonData,
+									sign: dataSet.sign
+								},
+								dataType: 'json',
+								beforeSend: function(xhr){
+//									console.log(jsonData)
+								},
+								success: function(data){
+									if(data.code == 1){
+										vm.oldPwdForm = false
+										vm.headerNavData.title = '设置登入密码'
+/*										vm.subListData = {
+											
+										}*/
+									} else {
+										/*console.log(data.code)
+										console.log(data.data)*/
+										mui.alert(data.msg)
+									}
+								},
+								complete: function(){
+									
+								}
+							})
+						} else {
+							mui.alert('请输入密码')
+						}
+					},
+					//提交新密码
+					submitNewPwd: function(){
+						//获取新密码
+						var newPwd = this.subListNewPwd.subList.items[0].inputData
+						//请求参数
+						var data = {
+//							mobile: this.mobile,
+							old_password: this.oldPwd,
+							new_password: newPwd,
+							step: 2
+						}
+						//数据处理
+						var dataSet = ajaxFun.dataStringify(data)
+						//发起修改密码请求						
+						jQuery.ajax({
+							url: service.config.url + api.config.modifyPwd,
+							type: 'POST',
+							data: {
+								encryptionType: 1,
+								data: dataSet.jsonData,
+								token: token_g,
+								sign: dataSet.sign
+							},
+							dataType: 'json',
+							beforeSend: function(data){
+//								console.log(jsonData)
+							},
+							success: function(data){
+//								console.log(data.code)
+								if(data.code == 1){
+									mui.alert('修改成功',function(){
+										window.location.href = 'setting.html'
+									})
+								} else {
+									mui.alert(data.msg)
+								}
+							}
+						})
+						
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

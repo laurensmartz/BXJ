@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>地区选择</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="valid-info-detail">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="custom-container m-t-44">
+				<sub-list :sub-list-data="subListName"></sub-list>
+				<pic-board :pic-board-data="picBoardData"></pic-board>
+				<sub-list :sub-list-data="subListContact1"></sub-list>
+				<sub-list :sub-list-data="subListContact2"></sub-list>
+			</article>
+		</div>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script type="text/javascript">
+			new Vue({
+				el: '#valid-info-detail',
+				data: {
+					headerNavData: {
+						title: '个人认证'
+					},
+					subListName: {
+						subList: {
+							items: [{title: '本人姓名', rightSpan: '老王'},
+									{title: '身份证号码', rightSpan: '350881990817352478'},
+									{title: '现居住地址', rightSpan: '福建省福州市鼓楼区东街口112号'},
+							]
+						}
+					},
+					picBoardData: {
+						title: '身份证正反面',
+						items: [{picSrcLeft: 'images/photo_1.png', picSrcRight: 'images/photo_2.png'}]
+					},
+					subListContact1: {
+						headerTitle: '联系人1信息',
+						subList: {
+							items: [{title: '联系人姓名', rightSpan: '郑兴源'},
+									{title: '联系人关系', rightSpan: '儿子'},
+									{title: '联系人电话', rightSpan: '18934760791'}
+							]
+						}
+					},
+					subListContact2: {
+						headerTitle: '联系人2信息',
+						subList: {
+							items: [{title: '联系人姓名', rightSpan: '王成瓦'},
+									{title: '联系人关系', rightSpan: '父亲'},
+									{title: '联系人电话', rightSpan: '18934760791'}
+							]
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

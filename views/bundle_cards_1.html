@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="bundle-cards">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="custom-container m-t-44">
+				<section class="cards-info">
+					<sub-list :sub-list-data="subListData"></sub-list>
+				</section>
+				<section class="submit-section p-t-50">
+					<submit-btn :submit-btn-data="submitBtnData"></submit-btn>
+				</section>
+				<p class="safe-msg">信息已安全加密，仅用于银行验证</p>
+			</article>
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script type="text/javascript">
+			new Vue({
+				el: '#bundle-cards',
+				data: {
+					headerNavData: {
+						title: '绑定银行卡信息'
+					},
+					subListData: {
+						subList: {
+							items: [{title: '持卡人', rightSpan: '王雨向'},
+									{title: '卡号', rightSpan: '6217008157250188578'},
+									{title: '手机号', rightSpan: '18788786093'},
+									{title: '开户行', rightSpan: '中国建设银行'},
+									{title: '支行', rightSpan: '福州仓山支行'},
+									{title: '验证码', placeHolder: '请输入验证码', minusWidth: true, rightSpan: '发送验证码(30s)', classObj: {'span-blue': true, 'add-width': true}},
+							]
+						}
+					},
+					submitBtnData: {
+						value: '申请'
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

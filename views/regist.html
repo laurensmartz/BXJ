@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>登入</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="regist">
+			<header-nav :header-nav-data="headerNavData"></header-nav>						
+			<article class="custom-container m-t-44">
+				<section v-if="registForm">
+					<sub-list :sub-list-data="subListData" v-on:click="registCom(arguments[0], arguments[1])"></sub-list>
+					<section class="submit-section p-t-50">
+						<submit-btn :submit-btn-data="submitBtnData" v-on:submit="regist"></submit-btn>						
+					</section>
+				</section>
+				<section v-if="cityList">
+					<section class="region-list">
+					<ul class="mui-table-view">											
+						<sub-list :sub-list-data="cityData" v-on:click="showSubCity(arguments[0], arguments[1], arguments[2])"></sub-list>
+					</ul>
+					</section>
+				</section>
+			</article>
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/cityData.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#regist',
+				data: {
+					//注册表单数据
+					registForm: true,					
+					headerNavData: {
+						title: '注册',
+						href: 'login.html'
+					},
+					submitBtnData: {
+						value: '注册',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					},
+					subListData: {
+						subList: {
+							items: [{title: '手机号码', noItemClick: true, inputText: true, placeHolder: "请输入手机号码", inputData: ''},
+									{title: '密码', noItemClick: true, inputPwd: true, placeHolder: "请输入密码", inputData: ''},
+									{title: '确认密码', noItemClick: true, inputPwd: true, placeHolder: "请确认密码", inputData: ''},
+									{title: '验证码', noItemClick: true, inputText: true, placeHolder: "验证码", minusWidth: true, rightSpan: '获取验证码', rightSpanStyle: 'position: absolute; right: 16px', rightFun: 'obtainValidCode', classObj: {'span-blue': true}},
+									{title: '所在地区', noItemClick: true, rightSpan: '点击选择', rightFun: 'showCityList', classObj: {'span-blue': true}},
+							]
+						}
+					},
+					//城市列表数据
+					cityList: false,
+					cityData: {
+						subList: {
+							items: cityData
+						}
+					},
+					'province_id': '',
+					'city_id': '',
+					'province_title': '',
+					'city_title': ''
+				},
+				methods: {
+					//注册
+					regist: function(){
+						//获取用户输入
+						var mobile = this.subListData.subList.items[0].inputData,
+							pwd = this.subListData.subList.items[1].inputData,
+							cfPwd = this.subListData.subList.items[2].inputData,
+							verify_code = this.subListData.subList.items[3].inputData
+						//判断用户输入是否合法
+						if(inputCheck.checkMobile(mobile)){
+							if(checkPwdEqual(pwd, cfPwd)){
+								var data = {
+									mobile: mobile,
+									password: pwd,
+									province_id: this['province_id'],
+									city_id: this['city_id'],
+									area_id: 1,
+									verify_code: verify_code
+								},
+								//序列化
+								jsonData = JSON.stringify(data)
+								jQuery.ajax({
+									url: service.config.url + '?act=Api/Login/requestRegister',
+									type: 'POST',
+									data: {
+										encryptionType: 0,
+										data: jsonData								
+									},
+									dataType: 'json',
+									beforeSend: function(){
+										console.log(mobile)
+										console.log(jsonData)
+										console.log(data)
+										console.log(service.config.url)
+									},
+									success: function(data){
+										if (data.code == 1){
+											mui.toast('注册成功')
+											setTimeout(function(){
+												window.location.href = 'index.html'
+											}, 1000)
+										} else {
+											mui.alert(data.msg)
+										}
+									}
+								})
+							} 
+						}						
+					},
+					//显示城市列表
+					showCityList: function(){
+						//隐藏注册视图
+						this.registForm = false
+						//显示城市列表视图
+						this.cityList = true
+						//更新城市列表数据
+						this.cityData.subList.items = cityData
+					},
+					//显示子城市列表
+					showSubCity: function(title, value, children){
+						//获得城市编号
+						var cityValue = value
+						//获得子城市数据
+						var subCity = children
+						//判断子城市数据是否存在
+						if(subCity){
+							//如果有子城市
+							//遍历父级城市
+							for (var i = 0; i < cityData.length; i++) {
+								//获得遍历索引的城市对象
+								var select = cityData[i],
+									selectValue = select.value
+								//判断省份
+								if(cityValue == selectValue){
+									//获得省份的编号
+									this['province_id'] = selectValue
+									//获得省份名称
+									this['province_title'] = select.title
+									//更新数据，显示子城市
+									this.cityData.subList.items = select.children					
+								}
+							}
+						} else {
+							//没有子城市
+							//获得城市编号
+							this['city_id'] = cityValue
+							//获得城市名称
+							this['city_title'] = title
+							//更新地区视图
+							this.subListData.subList.items[4].rightSpan = this['province_title'] + "-" + this['city_title']
+							//显示注册视图
+							this.registForm = true,
+							//隐藏城市列表视图
+							this.cityList = false
+						}
+					},
+					//获取验证码
+					obtainValidCode: function(srcEle){			
+						//获取用户手机号
+						var mobile = this.subListData.subList.items[0].inputData;
+						//判断手机号是否合法
+						if(1){
+							//设置请求数据
+							var	data = {mobile: mobile,type: 1},
+							//请求数据序列化
+							jsonData = JSON.stringify(data)											
+							//发起请求
+							jQuery.ajax({
+								url: service.config.url + '?act=Api/VerifyCode/requestVerifyCode',
+								type: 'POST',
+								data: {
+									encryptionType: 0,
+									data: jsonData								
+								},
+								dataType: 'json',
+								beforeSend: function(){
+									console.log(mobile)
+									console.log(jsonData)
+									console.log(data)
+								},
+								success: function(data){
+									console.log(data.verify_code)
+								}
+							})
+							countDown(srcEle)							
+						}						
+						//重新获取验证码倒计时
+						function countDown(srcEle){
+							//倒计时的秒数
+							var sec = 60;
+							//设置禁止获取验证码
+							rightFlag = false	
+							//设置倒计时循环
+							clock = setInterval(doLoop, 1000)
+							//每秒更新一次剩余秒数
+							function doLoop(){
+								sec--;
+								if(sec > 0){
+									srcEle.innerHTML = '重新获取(' + sec + ')'
+								} else {
+									//倒计时结束，清除循环变量
+									clearInterval(clock)
+									//重置获取验证码
+									srcEle.innerHTML = '获取验证码'
+									//设置允许重新获取验证码
+									rightFlag = true
+								}
+							}
+						}
+					},	
+					//注册组件
+					registCom: function(srcEle, funName){
+						switch(funName){
+							//获取验证码
+							case 'obtainValidCode':							
+								this.obtainValidCode(srcEle)
+								break
+							//显示城市列表
+							case 'showCityList':
+								this.showCityList()
+								break
+							default:
+								alert('fun not found')
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

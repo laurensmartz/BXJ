@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>百信佳</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script src="../js/common/fun.js"></script>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>	
+	<body>
+		<div id="setting" v-cloak>
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<!--个人信息界面-->
+			<section v-if="settingPanel" class="custom-container m-t-44">
+				<sub-list :sub-list-data="subListData" v-on:click="itemClick" v-on:change="changeImg(arguments[0])"></sub-list>								
+				<!--图片预览层-->
+				<div v-cloak v-if="shadow" class="shadow">
+					<span></span>
+					<img v-bind:src="upLoadAvatarUrl" style="width: 150px; height: 150px;"/>
+					<section class="submit-section">
+						<a class="mui-btn mui-btn-block mui-btn-primary custom-submit" v-on:click="upLoadAvatar">
+							<span>上传</span>
+						</a>
+						<a class="mui-btn mui-btn-block mui-btn-warning custom-submit" v-on:click="cancleUpload">
+							<span>取消</span>
+						</a>
+					</section>
+				</div>
+				<!--图片预览层-->
+				
+				<!--加载gif-->
+				<loading v-if="loading"></loading>
+				<!--加载gif-->
+				
+				<!--退出按钮-->
+				<section class="submit-section p-t-100">
+					<submit-btn :submit-btn-data="loginOutBtn" v-on:submit="loginOut"></submit-btn>
+				</section>
+				<!--退出按钮-->	
+			</section>								
+			<!--个人信息界面-->
+			<!--修改昵称界面-->
+			<section v-if="nickPanel" class="custom-container m-t-44">
+				<sub-list :sub-list-data="changeNickData" v-on:click="changeNickName" v-on:blur="updataNick"></sub-list>
+			</section>
+			<!--修改昵称界面-->
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/content_panel.js"></script>	
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#setting',
+				data: {
+					settingPanel: false,
+					nickPanel: false,
+					headerNavData: {
+						title: '设置',
+						href: 'mine.html'
+					},
+					subListData: {
+						subList: {
+							items: [{title: '头像', navigateRight: true, inputFile: true, fileId: 'avatar', rightWidget: {imgSrc: '', imgStyle: "position:absolute; top: 4px; right: 34px; width: 34px; height: 34px"}},
+									{title: '账号', navigateRight: true, rightSpan: '', classObj: {'span-black': true}},
+									{title: '昵称', navigateRight: true, rightSpan: 'middleTwo', classObj: {'span-grey': true}},
+									{title: '修改密码', navigateRight: true},
+									{title: '收货地址', navigateRight: true},
+							]
+						}
+					},
+					loginOutBtn: {
+						value: '退出登入',
+						btnClass: {
+							'mui-btn-danger': true
+						},
+						btnStyle: 'z-index: 0'
+					},
+					shadow: false,
+					//头像预览Url
+					upLoadAvatarUrl: '',
+					avatarFile: '',
+					loading: false,
+					changeNickData: {
+						subList: {
+							items: [{title: '昵称', inputText: false, inputData: '', rightSpan: '', classObj: {'span-grey': true}}]
+						}
+					}
+				},
+				methods: {
+					changeImg: function(srcEle){
+						//获取用户选择的图片
+						this.avatarFile = srcEle.files[0]
+						//创建文件读取对象
+						var reader = new FileReader()
+						//将用户图片读取为url
+						reader.readAsDataURL(this.avatarFile);
+						//读取完毕时更新用户头像
+						reader.onload = function(){
+							//显示遮盖层
+							vm.shadow = true
+							//设置头像预览
+							vm.upLoadAvatarUrl = reader.result					
+						}					
+					},
+					//上传头像
+					upLoadAvatar: function(){
+						//获得裁剪后头像Url
+						var avatarUrl = fun.cutImg(vm.upLoadAvatarUrl, 120, 120)
+						//将头像Url转为blob文件
+						var avatarFile = fun.dataURLtoBlob(avatarUrl)
+						//上传头像
+						ajaxFun.upLoadImg(avatarFile, success, error, null, beforeSend)
+						//成功
+						function success(data){		
+							//隐藏加载动画
+							vm.loading = false
+							//上传成功
+							if(data.resultCode == 1){
+								//修改头像url的接口
+								var url = service.config.url + api.config.modifyMineInfo
+								//原数据
+								var originData = {
+									//新头像的url
+									avatar_url: data.data[0]['url'],
+								}
+								//序列化和sign加密
+								var dataSet = ajaxFun.dataStringify(originData)
+								//请求数据
+								var requestData = {
+									encryptionType: 1,
+									token: token_g,
+									sign: dataSet.sign,
+									data: dataSet.jsonData
+								}
+								//发送请求
+								ajaxFun.common(url, 'POST', requestData, 'json', success, error)
+								//成功
+								function success(data){
+									if(data.code == 1){
+										mui.alert('上传成功', '提示', function(){
+											//隐藏遮罩层
+											vm.shadow = false
+											//更新头像
+											vm.subListData.subList.items[0].rightWidget.imgSrc = avatarUrl
+										})	
+									} else {
+										console.log(data.code)
+										console.log(data.msg)
+									}
+								}
+								//失败
+								function error(){
+									message.connError()
+								}																							
+							} else {
+								mui.alert('上传失败')
+							}
+						}
+						//失败
+						function error(){
+							//隐藏加载动画
+							vm.loading = false
+							//错误提示
+							message.connError()
+						}
+						//先行
+						function beforeSend(){
+							//显示加载
+							vm.loading = true
+						}
+					},
+					cancleUpload: function(){
+						this.shadow = false
+						var inputFile = document.getElementById('avatar')
+						inputFile.value = ''
+					},
+					itemClick: function(arg1){
+						switch(arg1){
+							case '修改密码':
+								window.location.href = 'modify_pwd.html'
+								break
+							case '昵称':
+								this.showNickPanel()
+								break
+							case '收货地址':
+								window.location.href = 'address.html'
+								break
+							default:								
+						}
+					},
+					showNickPanel: function(){
+						//显示修改昵称界面
+						this.settingPanel = false
+						this.nickPanel = true
+						this.headerNavData.title = '修改昵称'
+						this.changeNickData.subList.items[0].rightSpan = this.subListData.subList.items[2].rightSpan						
+					},
+					changeNickName: function(){
+						this.changeNickData.subList.items[0].rightSpan = false
+						this.changeNickData.subList.items[0].inputText = true
+						this.changeNickData.subList.items[0].placeHolder = '请输入新昵称'
+					},
+					updataNick: function(){
+						var url = service.config.url + api.config.modifyMineInfo
+						var nickName = this.changeNickData.subList.items[0].inputData
+						
+						if(nickName.length > 20){
+							mui.alert('昵称不能超过20个字')
+							return
+						}
+						var originData = {
+							nick_name: nickName
+						}
+						var requestData = ajaxFun.requestData(originData, 1, token_g)
+						//发起请求
+						ajaxFun.common(url, 'POST', requestData, 'json', success, error)
+						function success(data){
+							if(data.code ==1 ){
+								mui.toast('修改成功')
+								vm.subListData.subList.items[2].rightSpan = nickName 								
+								setTimeout(function(){
+									vm.changeNickData.subList.items[0].inputText = false
+									vm.settingPanel = true
+									vm.nickPanel = false
+								}, 1000)
+							} else {
+								mui.alert('修改失败')
+							}
+						}
+					},
+					loginOut: function(){
+						mui.confirm('确定退出吗', '提示', ['留下', '离开'], function(e){
+							if(e.index == 1){
+								fun.loginOut()
+								window.location.href = 'login.html'
+							}							
+						})						
+					},
+				}
+			})
+		</script>
+		<script type="text/javascript">
+//			var token = localStorage.getItem('token')
+			ajaxFun.getUserInfo(token_g, success, error, complete, beforeSend)
+			function success(data){
+				//账号
+				vm.subListData.subList.items[1].rightSpan = data.data.mobile
+				//昵称
+				vm.subListData.subList.items[2].rightSpan = data.data.nick_name
+				//头像
+				vm.subListData.subList.items[0].rightWidget.imgSrc = data.data.avatar_url
+				//显示设置面板
+				vm.settingPanel = true
+			}
+			function error(){
+				mui.alert('连接超时')
+			}
+			function complete(){
+				vm.loading = false
+			}
+			function beforeSend(){
+				vm.loading = true
+			}
+		</script>
+	</body>
+</html>

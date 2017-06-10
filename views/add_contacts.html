@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="add-contacts">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="custom-container m-t-34">
+				<sub-list :sub-list-data="subListContact"></sub-list>
+				<!--<sub-list :sub-list-data="subListContact_2"></sub-list>-->
+				<section class="submit-section p-t-50">
+					<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submit"></submit-btn>
+				</section>
+			</article>		
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/bankData.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#add-contacts',
+				data: {
+					headerNavData: {
+						title: '添加联系人信息'
+					},
+					'subListContact' :{
+						headerTitle: '联系人1信息',
+						subList: {
+							items: [{title: '联系人姓名', inputText: true, inputData: '', placeHolder: '请输入联系人姓名'},
+								{title: '联系人关系', inputText: true, inputData: '', placeHolder: '请输入与联系人关系'},
+								{title: '联系人电话', inputText: true, inputData: '', placeHolder: '请输入联系人手机号码'},
+							]
+						}						
+					},
+					'subListContact_2' :{
+						headerTitle: '联系人2信息',
+						subList: {
+							items: [{title: '联系人姓名', placeHolder: '请输入联系人姓名'},
+								{title: '联系人关系', placeHolder: '请输入与联系人关系'},
+								{title: '联系人电话', placeHolder: '请输入联系人手机号码'},
+							]
+						}						
+					},
+					submitBtnData: {
+						value: '提交'
+					}
+				},
+				methods: {
+					submit: function(){
+						var contactData = this.subListContact.subList.items
+						var url = service.config.url + api.config.certification
+						
+						var originData = {
+							step: 3,
+							/*linkman['name']: contactData[0].inputData,
+							linkman['relation']: contactData[1].inputData,
+							linkman['mobile']: contactData[2].inputData*/
+							linkman: {
+								name: contactData[0].inputData,
+								relation: contactData[0].inputData,
+								mobile: contactData[0].inputData
+							}
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 1,
+							token: token_g,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						console.log(requestData)
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								console.log(data)
+							} else {
+								console.log(data.code)
+								console.log(data.msg)
+							}
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

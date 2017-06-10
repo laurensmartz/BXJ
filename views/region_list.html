@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>地区选择</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<body>
+		<div id="app">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<section class="region-list">
+				<ul class="mui-table-view">					
+					<!--<sub-list-city :sub-list-data="cityData" v-on:click="showSubList(this.event)"></sub-list-city>-->
+					<sub-list :sub-list-data="cityData" v-on:click="showSubList(this.event)"></sub-list>
+				</ul>
+			</section>
+		</div>
+	</body>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="../components/js/header_nav.js"></script>
+	<script src="../components/js/sub_list.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/common/cityData.js"></script>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				headerNavData: {
+					backLink: 'hfb.html',
+					title: '选择地区'
+				},
+				cityData: {
+					navigateRight: true,
+					subList: {
+						items: cityData
+					}
+				}
+			},
+			methods: {
+				showSubList: function(event){
+//					this.headerNavData.title = arguments[0]
+//					this.cityData = 
+//					console.log(event.srcElement.getAttribute('data-city-value'))
+					var cityValue = event.srcElement.getAttribute('data-city-value')
+					var subCity = event.srcElement.getAttribute('data-children')
+//					console.log(cityValue)
+//					console.log(subCity)
+					if(subCity){
+						for (var i = 0; i < cityData.length; i++) {
+							var select = cityData[i],
+								selectValue = select.value
+							if(cityValue == selectValue){
+								this.cityData.subList.items = select.children					
+							}
+						}
+					} else {
+//						console.log(cityValue)
+						window.location.href = "./list.html?id="+id;
+					}
+					
+					
+
+//					this.cityData.subList.items = [{title:'fuzhou', value: '11'}]
+//					this.cityData = cityDataList.subList.items
+				}
+			}
+		})
+	</script>
+</html>

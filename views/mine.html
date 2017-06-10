@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>百信佳</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<script type="text/javascript">
+		if(!localStorage.getItem('token')){
+			window.location.href = 'login.html'
+		} else {
+			var token_g = localStorage.getItem('token')		
+		}
+	</script>
+	<body>
+		<div id="mine" v-cloak>
+			<header-search :header-nav-data="headerNavData" v-on:click="iconClick(arguments[0])"></header-search>
+			<!--内容容器-->
+			<section v-if="minePanel" class="m-t-35 custom-container">				
+				<!--页面头部-->
+				<header class="mine-header">
+					<section class="mine-header-content-container">
+						<section class="avator-container">
+							<img v-bind:src="mineInfo.avatarUrl"/>
+							<!--<div class="clear-both"></div>-->
+						</section>
+						<section class="info-container">
+							<p v-cloak v-if="mineInfo.mobile">会员ID：{{ mineInfo.mobile }}</p>
+							<p v-cloak v-if="mineInfo.nickName">昵称：{{ mineInfo.nickName }}</p>
+						</section>
+						<div class="clear-both"></div>
+					</section>
+					<content-panel :content-panel-data="wealthDetail"></content-panel>
+				</header>
+				<!--页面头部-->
+				
+				<!--账单面板-->
+				<section class="bill-container m-t-10">
+					<sub-list :sub-list-data="billTotal"></sub-list>
+					<content-panel :content-panel-data="billDetail"></content-panel>
+				</section>
+				<!--账单面板-->
+				
+				<!--订单面板-->
+				<section class="order-container m-t-10">
+					<sub-list :sub-list-data="orderTotal"></sub-list>
+					<content-panel :content-panel-data="orderDetail"></content-panel>
+				</section>
+				<!--订单面板-->
+				
+				<!--其他选项面板-->
+				<section class="otherOptions-container m-t-10">
+					<sub-list :sub-list-data="otherOptions"></sub-list>
+				</section>
+				<!--其他选项面板-->
+			</section>
+			<!--内容容器-->
+			
+			<!--底部导航-->
+			<footer-nav v-bind:footer-nav-data="footerNavData"></footer-nav>
+			<!--底部导航-->
+			
+			<!--加载动画-->
+			<loading v-if="loading"></loading>
+			<!--加载动画-->
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_search.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/content_panel.js"></script>	
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/footer_nav.js"></script>
+		<script src="../components/js/loading.js"></script>			
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/fun.js"></script>		
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>				
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#mine',
+				data: {
+					headerNavData: {
+						search: false,
+						title: '我的',
+						leftIcon: 'images/setting.png',
+						rightIcon: 'images/message.png',
+						iconClass: {
+							leftIcon: {'mui-icon-gear': true},
+							rightIcon: {'mui-icon-extra-comment': true}
+						}
+					},
+					footerNavData: {
+						index: {
+							imgSrc: 'images/nav-footer/index_off.png'
+						},
+						classify: {
+							imgSrc: 'images/nav-footer/classify_off.png'
+						},
+						mine: {
+							imgSrc: 'images/nav-footer/mine_on.png',
+							fontClass: {
+								'span-blue': true
+							}
+						}
+					},
+					mineInfo: {
+						nickName: '',
+						avatarUrl: '',
+						mobile: ''
+					},
+					wealthDetail: {
+						classObj: {'bg-2797df': true},
+						itemNum: 3,
+						items: {
+							first: {title: '积分', data: '', dataClass: {'span-white': true}, titleClass: {'span-white': true}},
+							second: {title: '信用额度', data: '', dataClass: {'span-white': true}, titleClass: {'span-white': true}},
+							third: {title: '收藏', data: '2', dataClass: {'span-white': true}, titleClass: {'span-white': true}}
+						}
+					},
+					billTotal: {
+						subList: {
+							items: [{title: '我的账单', rightSpan: '全部', classObj: {'span-grey': true}, navigateRight: true}]
+						}
+					},
+					billDetail: {
+						classObj: {'bg-white': true, 'divide-black': true},
+						itemNum: 3,
+						items: {
+							first: {title: '本期待还', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+							second: {title: '消费笔数', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+							third: {title: '滞纳金', data: '200', dataClass: {'span-red': true}, titleClass: {'span-grey': true}}
+						}
+					},
+					orderTotal: {
+						subList: {
+							items: [{title: '我的订单', rightSpan: '全部', classObj: {'span-grey': true}, navigateRight: true}]
+						}
+					},
+					orderDetail: {
+						classObj: {'bg-white': true, 'divide-white': true},
+						itemNum: 4,
+						items: {
+							first: {icon: true, iconSrc: 'images/mine_1.png', title: '待付款', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+							second: {icon: true, iconSrc: 'images/mine_2.png', title: '待审核', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+							third: {icon: true, iconSrc: 'images/mine_3.png', title: '代收货', data: '200', dataClass: {'span-red': true}, titleClass: {'span-grey': true}},
+							forth: {icon: true, iconSrc: 'images/mine_4.png', title: '待评价', data: '200', dataClass: {'span-red': true}, titleClass: {'span-grey': true}}
+						}
+					},
+					otherOptions: {
+						subList: {
+							items: [{title: '我的订单进度', navigateRight: true, rightWidget: {}},
+									{title: '我的银行卡', navigateRight: true, rightWidget: {}},
+									{title: '安全中心', navigateRight: true, rightWidget: {}},
+									{title: '联系我们', navigateRight: true, rightWidget: {}},
+									{title: '我的二维码', navigateRight: true, rightWidget: {}}
+							]
+						}
+					},
+					loading: false,
+					minePanel: false
+				},
+				methods: {					
+					//头部图标导航
+					iconClick: function(src){
+						switch(src){
+							case 'leftIcon':
+								goSetting()
+								break
+							default:
+								console.log('fun not exist')
+						}
+						//跳转到设置页
+						function goSetting(){
+							window.location.href = 'setting.html'
+						}
+					}
+				}
+			})
+		</script>
+		<script type="text/javascript">
+			//获取用户信息
+			if(ajaxFun.common){				
+				//设置请求url
+				var url = service.config.url + api.config.mineInfo
+				//设置原数据
+				var originData = {}
+				//序列化和sign加密
+				var dataSet = ajaxFun.dataStringify(originData)
+				//请求数据
+				var requestData = ajaxFun.requestData({}, 1, token_g)
+				//发起请求
+				ajaxFun.common(url, 'POST', requestData, 'json', success, error, complete, beforeSend)
+				//请求成功回调函数
+				function success(data){
+					if(data.code == 1){
+						//ID
+						vm.mineInfo.mobile = data.data.mobile
+						//昵称
+						vm.mineInfo.nickName = data.data.nick_name
+						//头像
+						//判断是否有设置头像
+						if(data.data.avatar_url){
+							//使用自定义头像
+							vm.mineInfo.avatarUrl = data.data.avatar_url							
+						} else {
+							//使用默认头像
+							vm.mineInfo.avatarUrl = 'images/head_small.png'
+						}
+						//积分
+						vm.wealthDetail.items.first.data = data.data.score
+						//信用
+						vm.wealthDetail.items.second.data = data.data.credit
+						//显示我的面板
+						vm.minePanel = true
+					} else {
+						mui.alert(data.msg)
+					}
+				}
+				function error(){
+					message.connError()
+				}
+				function complete(){
+					vm.loading = false
+				}
+				function beforeSend(){
+					vm.loading = true
+				}
+			} else {
+				console.log('ajaxFun.common not exist')
+			}
+		</script>
+	</body>
+</html>

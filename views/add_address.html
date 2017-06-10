@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>百信佳</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<script type="text/javascript">
+		if(!localStorage.getItem('token')){
+			window.location.href = 'login.html'
+		} else {
+			var token_g = localStorage.getItem('token')		
+		}
+	</script>
+	<body>
+		<div id="add-address">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<section class="custom-container m-t-44">
+				<sub-list :sub-list-data="subListData"></sub-list>
+				<section class="submit-section p-t-100">
+					<submit-btn :submit-btn-data="submitBtnData" v-on:submit="addAddress"></submit-btn>
+				</section>
+			</section>
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/content_panel.js"></script>	
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/fun.js"></script>		
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#add-address',
+				data: {
+					headerNavData: {
+						title: '添加收货地址',
+						goBack: true
+					},
+					subListData: {
+						subList: {
+							items: [{title: '收货人姓名', inputText: true, inputData: '', placeHolder: '输入' },
+									{title: '手机号码', inputText: true, inputData: '', placeHolder: '输入' },
+									{title: '邮政编码', inputText: true, inputData: '', placeHolder: '输入' },
+									{title: '省、市、区', inputText: true, inputData: '', placeHolder: '输入' },
+									{title: '街道', inputText: true, inputData: '', placeHolder: '输入' }
+							]
+						}
+					},
+					submitBtnData: {
+						value: '保存',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					}
+				},
+				methods: {
+					addAddress: function(){
+						
+						var url = service.config.url + api.config.addAddress
+						
+						var originData = {
+							name: this.subListData.subList.items[0].inputData,
+							mobile: this.subListData.subList.items[1].inputData,
+							postcode: this.subListData.subList.items[2].inputData,							
+							address: this.subListData.subList.items[3].inputData,
+							zone: this.subListData.subList.items[4].inputData						
+						}
+						
+						var requestData = ajaxFun.requestData(originData, 1, token_g)
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								mui.toast('保存成功')
+								setTimeout(function(){
+									window.location.href = 'address.html'
+								},1000)
+							} else {
+								console.log(data.msg)
+							}
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

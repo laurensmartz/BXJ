@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>百信佳</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+	</head>
+	<script type="text/javascript">
+		if(!localStorage.getItem('token')){
+			window.location.href = 'login.html'
+		} else {
+			var token_g = localStorage.getItem('token')		
+		}
+	</script>
+	<body>
+		<div id="address">
+			<section v-if="addrPanel" class="custom-container m-t-44">	
+				<header-nav :header-nav-data="headerNavData" v-on:click="goBack('showSettingPanel')"></header-nav>
+				<section class="content">
+					<section class="address-list">
+						<ul v-for="item in subListData.subList.items" class="mui-table-view" style="margin-bottom: 10px;">
+								<li v-cloak class="mui-table-view-cell notActive">
+									<p>
+										<span>{{ item.name }}</span>
+										<span>{{ item.mobile }}</span>
+										<span></span>
+									</p>
+									<p>
+										<span>{{ item.address }}</span>
+										<span>{{ item.zone }}</span>
+										<span></span>
+										<span></span>
+										<span></span>
+										<span></span>
+									</p>
+								</li>
+								<li class="mui-table-view-cell notActive">
+									<p>
+										<span class="icon-container" v-on:click="setDefaultAddr(this.event, item.addrId)"><span class="icon" v-bind:class="item.iconClass"></span>默认地址</span>
+										<span v-on:click="showUpdateAddr"><span class="icon edit-icon"></span>编辑</span>
+										<span v-on:click="delAddress(this.event)" v-bind:address-id="item['address_id']"><span class="icon del-icon"></span>删除</span>
+									</p>									
+								</li>						
+						</ul>
+					</section>
+					<section class="submit-section">
+						<submit-btn :submit-btn-data="submitBtnData" v-on:submit="addAddr"></submit-btn>
+					</section>
+				</section>			
+			</section>
+			
+			<!--修改地址面板-->
+			<section v-if="updatePanel" class="custom-container m-t-44">
+				<header-nav :header-nav-data="updateAddrNav" v-on:click="goBack('showAddrPanel')"></header-nav>
+				<sub-list :sub-list-data="updatePanelData"></sub-list>
+			</section>
+			<!--修改地址面板-->
+			
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/content_panel.js"></script>	
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/fun.js"></script>		
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>	
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#address',
+				data: {
+					headerNavData: {
+						title: '我的收货地址',
+						clickBack: true
+					},	
+					updateAddrNav: {
+						title: '修改收货地址',
+						clickBack: true
+					},
+					subListData: {
+						subList: {
+							items: []
+						}
+					},
+					submitBtnData: {
+						value: '添加收货地址',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					},
+					updatePanelData: {
+						subList: {
+							items: [{title: '姓名', inputText: true, inputData: '', placeHolder: '请输入姓名'},
+									{title: '姓名', inputText: true, inputData: '', placeHolder: '请输入姓名'},
+									
+							]
+						}
+					},
+					addrPanel: true,
+					updatePanel: false
+				},
+				methods: {
+					//设置默认地址
+					setDefaultAddr: function(event, addrId){
+						
+						var srcEle = event.srcElement
+						
+						var url = service.config.url + api.config.defaultAddr
+						
+						var originData = {
+							address_id: addrId,							
+						}
+						
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 1,
+							token: token_g,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								
+								//清除默认地址样式
+								for (var i = 0; i < vm.subListData.subList.items.length; i++){
+									$('.icon-container span.icon').attr('class', 'icon address-icon-off')
+								}
+								
+								//设置默认地址样式
+								if(srcEle.childNodes.length == 0){
+									srcEle.setAttribute('class', 'icon address-icon-on')
+								} else {
+									srcEle.childNodes[0].setAttribute('class', 'icon address-icon-on')
+								}
+								//修改成功
+								mui.toast('修改成功')
+							} else {
+								console.log(data.msg)
+							}
+						}
+					},
+					addAddr: function(){
+						window.location.href = 'add_address.html'
+					},
+					delAddress: function(event){
+						mui.confirm('是否要删除','提示', ['取消', '删除'], function(e){
+							if(e.index == 1){
+								var url = service.config.url + api.config.delAddress
+						
+								var originData = {
+									address_id: event.srcElement.getAttribute('address-id')
+								}
+								
+								var requestData = ajaxFun.requestData(originData, 1, token_g)
+								
+								console.log(requestData)
+								
+								ajaxFun.common(url, 'POST', requestData, 'json', success, error)
+								
+								function success(data){
+									if(data.code == 1){
+										console.log(data)
+										mui.toast('删除成功')
+										setTimeout(function(){
+											window.location.reload(true)											
+										}, 1000)
+
+									} else {
+										console.log(data.msg)
+									}
+								}
+								function error(){
+									message.connError()
+								}
+							}	else {
+								
+							}
+						})
+						
+					},
+					showUpdateAddr: function(){
+						this.addrPanel = false
+						this.updatePanel = true
+					},
+					showAddrPanel: function(){						
+						this.updatePanel = false
+						this.addrPanel = true
+					},
+					goBack: function(dest){
+						switch(dest){
+							case 'showAddrPanel':
+								this.updatePanel = false
+								this.addrPanel = true
+								break
+							case 'showSettingPanel':
+								window.location.href = 'setting.html'
+								break
+						}
+					}
+				}
+			})
+		</script>
+		<!--获取收货地址列表-->
+		<script type="text/javascript">			
+			var url = service.config.url + api.config.addressList,
+			originData = {
+				pageIndex: 0,
+				pageCount: 10,				
+			},
+			requestData = ajaxFun.requestData(originData, 1, token_g)
+			
+			ajaxFun.common(url, 'POST', requestData, 'json', success)
+			
+			function success(data){
+				if(data.code == 1){
+					console.log(data)
+					var items = []
+					for (var i = 0; i < data.data.length; i++) {						
+						items[i] = {
+							name: data.data[i]['name'],
+							mobile: data.data[i]['mobile'],
+							address: data.data[i]['address'],
+							zone: data.data[i]['zone'],
+							iconClass: {
+								'address-icon-off': true
+							},
+							addrId: data.data[i]['address_id']
+						}
+						if(data.data[i]['is_default'] != 0){
+							items[i]['iconClass'] = {															
+								'address-icon-on': true
+							}
+//							vm.defautIndex: i
+						}
+					}
+					vm.subListData.subList.items = items
+				} else {
+					console.log(data.msg)
+				}
+			}
+		</script>
+	</body>
+</html>

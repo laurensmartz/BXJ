@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="submit-service-pwd">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="custom-container m-t-44">
+				<section class="service-info">
+					<sub-list :sub-list-data="subListData"></sub-list>
+				</section>
+				<section class="rule-info">
+					<p>1.授权手机需在网三个月以上</p>
+					<p>2.电信和移动手机号需要输入动态验证码</p>
+					<p>3.登录成功后将收到运营商通知短信，无需回复</p>
+					<p>4.忘记服务密码可以通过发送短信或拨打运营商服务密码
+					来更改密码。如果这两种方式都无法更改的话请前往就近
+					营业厅办理。</p>
+				</section>
+				<section class="submit-section p-t-100">
+					<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submit"></submit-btn>
+				</section>
+			</article>
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="../vue/vue.js"></script>
+		<script src="../components/js/header_nav.js"></script>
+		<script src="../components/js/sub_list.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../components/js/pic_board.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/bankData.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#submit-service-pwd',
+				data: {
+					headerNavData: {
+						title: '提交服务密码',
+						goBack: true
+					},
+					subListData: {
+						subList: {
+							items: [{title: '手机号码', inputText: true, inputData: '', placeHolder: '请输入手机号码'},
+									{title: '服务密码', inputText: true, inputData: '', placeHolder: '请输入服务密码'}
+							]
+						}
+					},
+					submitBtnData: {
+						value: '提交',
+						btnClass: {
+							'mui-btn-primary': true
+						}
+					}
+				},
+				methods: {
+					submit: function(){
+						var mobileInfo = this.subListData.subList.items
+						
+						var url = service.config.url + api.config.certification
+						
+						var originData = {
+							step: 4,
+							mobile: mobileInfo[0].inputData,
+							service_password: mobileInfo[1].inputData,
+							verify_code: '1234'
+						}
+						var dataSet = ajaxFun.dataStringify(originData)
+						
+						var requestData = {
+							encryptionType: 1,
+							token: token_g,
+							data: dataSet.jsonData,
+							sign: dataSet.sign
+						}
+						
+						console.log(requestData)
+						ajaxFun.common(url, 'POST', requestData, 'json', success)
+						
+						function success(data){
+							if(data.code == 1){
+								console.log(data)
+							} else {
+								console.log(data.msg)
+								console.log(data.code)
+							}
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

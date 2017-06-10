@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/lib/swiper.min.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="index" v-cloak>
+			<header-search :header-nav-data="headerNavData" v-on:click="headerNavClick"></header-search>			
+			<div class="custom-container m-t-34">
+				<slider-banner :slider-banner-data="indexAdData"></slider-banner>
+				<nav-icon v-bind:nav-icon-text="navIconText"></nav-icon>
+				<div style="clear: both;"></div>
+				<div class="ad-xbkb">
+					<div class="ad-header">
+						<span>小百快报</span>
+					</div>
+					<div class="divider"></div>
+					<div class="ad-body">
+						<!--<span>红米4X新品首发，限时12期免息！</span>-->
+						<span>{{ xbkb.items[xbkb.index].title }}</span>
+						<!--<ul style="border: 1px solid red;">
+							<li v-for="item in xbkb.items">
+								<span>{{ item.title }}</span>
+							</li>
+						</ul>-->
+					</div>
+				</div>
+				<nav-regist></nav-regist>
+				<article class="hot-recommend">
+					<header class="header">
+						<span>热门分期</span>
+						<!--<a href="category.html"><span class="mui-icon mui-icon-more"></span></a>-->
+					</header>
+					<section id="containerTest" class="body swiper-container">
+						<div class="swiper-wrapper">
+							<div v-for="item in hotStageData" class="swiper-slide pdt-item">
+								<div class="pdt-container">
+									<a :href="item.href">
+										<!--<div class="combo-icon">{{ item['stage_payment' ]}}</div>-->
+										<img :src="item['logo']" style="width: 60px;"/>
+										<p class="span-grey f-s-12">{{ item['operators'] == 1 ? '移动' : item['operators'] == 2 ? '联通' : '电信'}}话费宝</p>
+										<p class="pdt-price">{{ item['name'] }}</p>
+										<p class="pdt-month f-s-12">月供:￥{{ item['stage_payment'] }}</p>	
+									</a>									
+								</div>
+							</div>
+						</div>
+					</section>
+				</article>
+			</div>
+			
+			<footer-nav v-bind:footer-nav-data="footerNavData"></footer-nav>
+			
+			<!--加载动画-->
+			<loading v-if="loading"></loading>
+			<!--加载动画-->
+			
+			<!--防触控mask-->
+			<prevent-touch-mask :prevent-touch-mask-data="preventTouchMask"></prevent-touch-mask>
+			<!--防触控mask-->
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js"></script>
+		<script src="../js/lib/swiper.min.js"></script>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/header_search.js"></script>
+		<script src="../components/js/slider-banner.js"></script>
+		<script src="../components/js/nav_icon.js"></script>
+		<script src="../components/js/loading.js"></script>
+		<script src="../components/js/prevent_touch_mask.js"></script>
+		<script src="../components/js/nav_regist.js"></script>
+		<script src="../components/js/footer_nav.js"></script>		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/fun.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script>			
+			var vm = new Vue({
+				el: '#index',
+				data: {
+					navIconText: ['联通','电信','移动','裸机商城','我的收款'],
+					headerNavData: {
+						search: true,
+						leftIcon: 'images/scan.png',
+						rightIcon: 'images/message.png',
+						iconClass: {
+							leftIcon: {'mui-icon-extra-sweep': true},
+							rightIcon: {'mui-icon-extra-comment': true}
+						}
+					},
+					indexAdData: {
+						imgData: [],
+						indicatorNum: 0
+					},
+					xbkb: {
+						index: 0,
+						items: [
+							{title: ''}
+						]
+					},
+					hotStageData: [],
+					footerNavData: {
+						index: {
+							imgSrc: 'images/nav-footer/index_on.png',
+							fontClass: {
+								'span-blue': true
+							}
+						},
+						classify: {
+							imgSrc: 'images/nav-footer/fare_off.png'
+						},
+						mine: {
+							imgSrc: 'images/nav-footer/mine_off.png'
+						}
+					},
+					loading: false,
+					preventTouchMask: false
+				},
+				methods: {
+					headerNavClick: function(target){
+						switch(target){
+							case 'rightIcon':
+								window.location.href = 'message.html'
+								break
+						}
+					}
+				}
+			})
+		</script>
+		<script type="text/javascript">
+			//首页轮播图
+			var url = service.config.url + api.config.ad
+			
+			var originData = {
+				position: 1
+			}
+			
+			var requestData = ajaxFun.requestData(originData, 0, token_g)
+			
+			ajaxFun.common(url, 'POST', requestData, 'json', success, ajaxFun.callBack.error, ajaxFun.callBack.complete, ajaxFun.callBack.beforeSend)
+		
+			function success(data){
+				if(data.code == 1){
+					var arr = []
+					
+					for (var i = 0; i < data.data.length; i++) {
+						arr[i] = {
+							//图片url
+							imgUrl: data.data[i]['image_url'],
+							//图片链接
+							linkUrl: data.data[i]['link_url']
+						}				
+					}
+					//新增两个节点
+					var firstEle = {
+						imgUrl: data.data[data.data.length - 1]['image_url'],
+						linkUrl: data.data[data.data.length - 1]['link_url'],
+						sliderClass: {'mui-slider-item-duplicate': true}
+					},
+						lastEle = {
+						imgUrl: data.data[0]['image_url'],
+						linkUrl: data.data[0]['link_url'],
+						sliderClass: {'mui-slider-item-duplicate': true}	
+					}
+					//将新增节点追加到图片数组里
+					arr.unshift(firstEle)
+					arr.push(lastEle)
+					//更新数据
+					vm.indexAdData.imgData = arr
+					vm.indexAdData.indicatorNum = data.data.length - 1
+					// DOM 还没有更新
+			      	vm.$nextTick(function () {
+				        // DOM 现在更新了
+					 	mui(".mui-slider").slider({
+				               interval: 5000
+			          	});
+			      	})
+			      	
+				} else {
+					mui.alert(data.msg)
+				}
+			}
+			
+			//首页热门分期
+			var hotStageUrl = service.config.url + api.config.hotStage
+			
+			var originData = {}
+			
+			var requestData = ajaxFun.requestData(originData, 1, token_g)
+			
+			ajaxFun.common(hotStageUrl, 'POST', requestData, 'json', successHotStage, ajaxFun.callBack.error,
+				ajaxFun.callBack.complete, ajaxFun.callBack.beforeSend)
+			
+			function successHotStage(data){
+				if(data.code == 1){
+					console.log(data)
+					var arr = []
+					
+					for (var i = 0; i < data.data.length; i++) {
+						arr[i] = {
+							tel_charge_id: data.data[i]['tel_charge_id'],
+							stage_payment: data.data[i]['stage_payment'],
+							operators: data.data[i]['operators'],
+							name: data.data[i]['name'],
+							logo: data.data[i]['logo'],
+							href: 'category.html?operator=' + data.data[i]['operators'] + 
+								'&chargeId=' + data.data[i]['tel_charge_id'] + '&goodsName=' + data.data[i]['goods_name']
+						}
+					}
+					//更新热门数据
+					vm.hotStageData = arr
+					
+					vm.$nextTick(function () {
+				        // DOM 现在更新了
+					 	var swiper = new Swiper('.swiper-container', {
+							slidesPerView: 'auto',
+					        paginationClickable: true,
+					        freeMode: true
+					   });
+			      	})
+				} else {
+					mui.alert(data.msg)
+				}
+			}
+		
+			//小百快报
+			var url = service.config.url + api.config.articleList,
+				originData = {},
+				requestData = ajaxFun.requestData(originData, 0)
+				
+			ajaxFun.common(url, 'POST', requestData, 'json', successXBKB, ajaxFun.callBack.error,
+					ajaxFun.callBack.complete, ajaxFun.callBack.beforeSend)
+			
+			function successXBKB(data){
+				if(data.code == 1){
+					console.log(data)
+					var arr = []
+					
+					for (var i = 0; i < data.data.length; i++) {
+						arr[i] = {
+							title: data.data[i]['title'],
+							id: data.data[i]['article_id']
+						}
+					}
+					
+					vm.xbkb.items = arr
+					//快报循环
+					setInterval(function(){
+						if(vm.xbkb.index < arr.length - 1){
+							vm.xbkb.index++
+						} else {
+							vm.xbkb.index = 0
+						}
+					}, 5000)
+					
+				} else {
+					console.log(data.msg)
+				}
+			}
+		</script>
+
+	</body>
+</html>

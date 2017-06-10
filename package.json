@@ -1,0 +1,27 @@
+{
+  "name": "WebpackWX",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.28.0",
+    "file-loader": "^0.11.1",
+    "jquery": "^3.2.1",
+    "url-loader": "^0.5.8",
+    "vue": "^2.3.3",
+    "vue-hot-reload-api": "^2.0.11",
+    "vue-html-loader": "^1.2.4",
+    "vue-loader": "^11.3.4",
+    "vue-router": "^2.4.0",
+    "vue-style-loader": "^2.0.5",
+    "vue-template-compiler": "^2.2.4",
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.4.2"
+  }
+}

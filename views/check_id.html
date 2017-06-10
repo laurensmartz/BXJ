@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>地区选择</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(!localStorage.getItem('token')){
+				window.location.href = 'login.html'
+			} else {
+				var token_g = localStorage.getItem('token')		
+			}
+		</script>
+	</head>
+	<body>
+		<div id="check_id">
+			<header-nav :header-nav-data="headerNavData"></header-nav>
+			<article class="custom-container m-t-44">
+				<section class="info_board">
+					<sub-list :sub-list-data="subListData"></sub-list>
+				</section>
+				<pic-board :pic-board-data="picBoardData" v-on:change="changeImg"></pic-board>
+				<section class="address_info">
+					<sub-list :sub-list-data="subListAddress"></sub-list>
+				</section>
+				<section class="submit-section">
+					<submit-btn :submit-btn-data="submitBtnData" v-on:submit="submit"></submit-btn>				
+				</section>
+				<!--图片预览层-->
+				<div v-cloak v-if="shadow" class="shadow">
+					<span></span>
+					<img v-bind:src="preImgUrl" style="width: 150px; height: 150px;"/>
+					<section class="submit-section">
+						<a class="mui-btn mui-btn-block mui-btn-primary custom-submit" v-on:click="uploadImg">
+							<span>上传</span>
+						</a>
+						<a class="mui-btn mui-btn-block mui-btn-warning custom-submit" v-on:click="cancleUpload">
+							<span>取消</span>
+						</a>
+					</section>
+				</div>
+				<!--图片预览层-->
+			</article>
+			<loading :loading-data="loadingData"></loading>
+		</div>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="../vue/vue.js"></script>
+	<script src="../components/js/header_nav.js"></script>
+	<script src="../components/js/sub_list.js"></script>
+	<script src="../components/js/submit_btn.js"></script>
+	<script src="../components/js/pic_board.js"></script>
+	<script src="../components/js/loading.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/common/md5.js"></script>
+	<script src="../js/common/fun.js"></script>
+	<script src="../js/common/message.js"></script>
+	<script src="../js/common/ajaxFun.js"></script>
+	<script src="../js/common/service.config.js"></script>
+	<script src="../js/common/api.config.js"></script>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#check_id',
+			data: {
+				headerNavData: {
+					title: '核对身份信息'
+				},
+				subListData: {
+					subList: {
+						items: [{title: '手机号码', inputText: true, inputData: '18815918109', placeHolder: '请输入手机号码'},
+								{title: '本人姓名', inputText: true, inputData: '张三', placeHolder: '请输入姓名'},
+								{title: '身份证号码', inputText: true, inputData: '350784199007070035', placeHolder: '请输入身份证号码'}
+						]
+					}
+				},
+				subListAddress: {
+					subList: {
+						items: [{title: '现居住地址', inputText: true, inputData: '福州', placeHolder: '请输入现居住地址'},
+								{title: '收件地址', inputText: true, inputData: '福州', placeHolder: '请输入收件地址'}
+						]
+					}
+				},
+				submitBtnData: {
+					value: '下一步',
+					link: '',
+					btnClass: {
+						'mui-btn-primary': true
+					}
+				},
+				picBoardData: {
+					title: '身份证正反面',
+					items: [{subTitleLeft: '法人身份证正面', plusImg: true, picSrcLeft: 'images/photo_upload.png', subTitleRight: '', picSrcRight: 'images/photo_1.png'},
+							{subTitleLeft: '法人身份证反面', plusImg: true, picSrcLeft: 'images/photo_upload.png', subTitleRight: '', picSrcRight: 'images/photo_2.png'}
+					]
+				},
+				loadingData: {
+					loading: false
+				},
+				shadow: false,
+				preImgUrl: '',
+				uploadImgFile: '',
+				srcEle: '',
+				dataUrl: '',
+				frontUrl: '',
+				backUrl: ''
+			},
+			methods: {
+				changeImg: function(srcEle){
+					//将事件元素保存为vue数据
+					this.srcEle = srcEle
+					//获取图片文件
+					var imgFile = srcEle.files[0]
+					//读取图片
+					var reader = new FileReader()
+					reader.readAsDataURL(imgFile)
+					reader.onload = function(){
+						vm.shadow = true
+						//图片预览
+						vm.preImgUrl = reader.result
+						//图片裁剪
+						vm.dataUrl = fun.cutImg(reader.result, 300, 180)
+						//将裁切后的图片转为blob
+						vm.uploadImgFile = fun.dataURLtoBlob(vm.dataUrl)
+					}
+				},
+				uploadImg: function(){
+					ajaxFun.upLoadImg(this.uploadImgFile, success, error, complete, beforeSend)
+					
+					function success(data){
+						if(data.resultCode == 1){
+							$(vm.srcEle).siblings('img').attr('src', vm.dataUrl)
+							if(!vm.frontUrl){
+								vm.frontUrl = data.data[0]['url']
+							} else {
+								vm.backUrl = data.data[0]['url']
+							}							
+							mui.toast('上传成功')						
+							vm.shadow = false
+						} else {
+							console.log(data.msg)
+						}
+					}
+					function error(){
+						message.connError()	
+					}
+					function complete(){
+						vm.loadingData.loading = false
+					}
+					function beforeSend(){
+						vm.loadingData.loading = true
+//						$(vm.srcEle).siblings('img').attr('src', vm.dataUrl)														
+					}
+				},
+				cancleUpload: function(){
+					this.shadow = false
+//					$(vm.srcEle).siblings('img').attr('src', 'images/photo_upload.png')													
+//					vm.srcEle.value = ''
+				},
+				submit: function(){
+					var url = service.config.url + api.config.certification
+					
+					var originData = {
+						real_name: vm.subListData.subList.items[1].inputData,
+						id_card: vm.subListData.subList.items[2].inputData,
+						id_card_photo: vm.frontUrl,
+						id_card_back_photo: vm.backUrl,
+						reside_addr: vm.subListAddress.subList.items[0].inputData,
+						step: 1
+					}
+					
+					var dataSet = ajaxFun.dataStringify(originData)
+					
+					var requestData = {
+						encryptionType: 1,
+						token: token_g,
+						sign: dataSet.sign,
+						data: dataSet.jsonData						
+					}
+					
+					ajaxFun.common(url, 'POST', requestData, 'json', success)
+					
+					function success(data){
+						if(data.code == 1){
+							console.log(data)
+							mui.toast('提交成功')
+							setTimeout(function(){
+								window.location.href = 'submit_info.html'
+							}, 1000)
+						} else {
+							console.log(data.msg)
+						}
+					}
+				}
+			}
+		})
+	</script>
+	</body>
+</html>

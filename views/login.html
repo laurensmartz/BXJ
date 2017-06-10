@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<title>登入</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/custom/custom.css"/>
+		<script type="text/javascript">
+			if(typeof(Storage) !== "undefined"){
+				var logined = localStorage.getItem('token')
+				if(logined){
+					window.location.href = 'mine.html'
+				}			
+			} else {
+				alert('你的浏览器需要升级')
+			}
+		</script>
+	</head>
+	<body class="custom-body-white">
+		<div id="login">			
+			<!--登入界面-->
+			<section class="custom-container">
+				<section class="bxj-logo">
+					<img src="images/logo.png" />
+					<p>百信佳通信</p>
+				</section>
+				<article class="login-form">
+					<section class="custom-input">
+						<div class="mui-input-row">
+							<img src="images/person.png" />						
+							<input type="text" v-model="mobile" maxlength="11" placeholder="请输入手机号码"/>	
+						</div>
+					</section>
+					<section class="custom-input">						
+						<div class="mui-input-row">
+							<img src="images/password.png" />
+							<input type="password" v-model="pwd" placeholder="请输入您的密码"/>
+						</div>
+					</section>
+					<section class="custom-submit-container">
+						<submit-btn :submit-btn-data="submitBtnData" v-on:submit="login(mobile, pwd)"></submit-btn>
+					</section>
+					<section class="regist-forget">
+						<a class="span-blue" href="regist.html"><span>注册账号</span></a>
+						<span>忘记密码</span>
+					</section>
+					<!--<div id="info"></div>-->
+				</article>
+			</section>	
+			<!--登入界面-->
+		</div>
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<script src="../components/js/submit_btn.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common/md5.js"></script>
+		<script src="../js/common/inputCheck.js"></script>
+		<script src="../js/common/service.config.js"></script>
+		<script src="../js/common/api.config.js"></script>
+		<script src="../js/common/ajaxFun.js"></script>
+		<script src="../js/common/message.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#login',
+				data: {
+					submitBtnData: {
+						value: '登入',
+						btnClass: {'mui-btn-primary': true}
+					},
+					mobile: '',
+					pwd: '',
+					logined: logined,
+					submitBtnLoginOut: {
+						value: '退出登入'
+					}
+				},
+				methods: {
+					//登入
+					login: ajaxFun.login,
+					//退出登入
+					loginOut: function(){
+						localStorage.removeItem('logined')
+						localStorage.removeItem('token')
+						this.logined = false
+					}
+				}
+			})
+		</script>
+	</body>
+</html>
