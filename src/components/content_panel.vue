@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<section class="content-panel-container" v-bind:class="contentPanelData.classObj" >
-			<div v-for="item in contentPanelData.items">
+			<div v-for="item in contentPanelData.items" v-bind:style="itemWidth">
 				<a :href="item.href">
 				<p v-if="item.icon">
 					<img v-bind:src="item.iconSrc" width="22px"/>
@@ -16,7 +16,12 @@
 
 <script>
 	export default {
-		props: ['contentPanelData']
+		props: ['contentPanelData'],
+		computed: {
+			itemWidth: function(){
+				return 'width:' + 100/this.contentPanelData.itemNum + '%'
+			}
+		}
 	}
 </script>
 

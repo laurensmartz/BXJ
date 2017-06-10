@@ -22,21 +22,21 @@
 			
 			<!--账单面板-->
 			<section class="bill-container m-t-10">
-				<!--<sub-list :sub-list-data="billTotal" v-on:click="goView"></sub-list>-->
+				<sub-list :sub-list-data="billTotal" v-on:click="goView"></sub-list>
 				<content-panel :content-panel-data="billDetail"></content-panel>
 			</section>
 			<!--账单面板-->
 			
 			<!--订单面板-->
 			<section class="order-container m-t-10">
-				<!--<sub-list :sub-list-data="orderTotal" v-on:click="goView"></sub-list>-->
+				<sub-list :sub-list-data="orderTotal" v-on:click="goView"></sub-list>
 				<content-panel :content-panel-data="orderDetail"></content-panel>
 			</section>
 			<!--订单面板-->
 			
 			<!--其他选项面板-->
 			<section class="otherOptions-container m-t-10" style="padding-bottom: 52px;">
-				<!--<sub-list :sub-list-data="otherOptions" v-on:click="goView"></sub-list>-->
+				<sub-list :sub-list-data="otherOptions" v-on:click="goView"></sub-list>
 			</section>
 			<!--其他选项面板-->
 		</section>
@@ -49,7 +49,7 @@
 <script>
 	import HeaderSearchNav from '../header_search_nav.vue'
 	import ContentPanel from '../content_panel.vue'
-//	import SubList from '../sub_list.vue'
+	import SubList from '../sub_list.vue'
 	import FooterNav from '../footer_nav.vue'
 	import fun from '../../../js/common/fun.js'
 	import ajaxFun from '../../../js/common/ajaxFun.js'
@@ -82,11 +82,42 @@
 						third: {title: '收藏', data: '0', dataClass: {'span-white': true}, titleClass: {'span-white': true}}
 					}
 				},
+				billTotal: {
+					subList: {
+						items: [{title: '我的账单', rightSpan: '全部', classObj: {'span-grey': true}, navigateRight: true}]
+					}
+				},
 				billDetail: {
+					classObj: {'bg-white': true, 'divide-black': true},
+					itemNum: 3,
 					items: {
-						first: {},
-						second: {},
-						third: {}
+						first: {title: '本期待还', data: '0', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+						second: {title: '消费笔数', data: '0', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+						third: {title: '滞纳金', data: '0', dataClass: {'span-red': true}, titleClass: {'span-grey': true}}
+					}
+				},
+				orderTotal: {
+					subList: {
+						items: [{title: '我的订单', rightSpan: '全部', classObj: {'span-grey': true}, navigateRight: true}]
+					}
+				},
+				orderDetail: {
+					classObj: {'bg-white': true, 'divide-white': true},
+					itemNum: 4,
+					items: {
+						first: {icon: true, iconSrc: '../../views/images/mine_1.png', title: '待付款', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+						second: {icon: true, href: 'orders.html?orderStatus=toAudit', iconSrc: '../../views/images/mine_2.png', title: '待审核', data: '200', dataClass: {'span-blue': true}, titleClass: {'span-grey': true}},
+						third: {icon: true, iconSrc: '../../views/images/mine_3.png', title: '待收货', data: '200', dataClass: {'span-red': true}, titleClass: {'span-grey': true}},
+						forth: {icon: true, iconSrc: '../../views/images/mine_4.png', title: '待评价', data: '200', dataClass: {'span-red': true}, titleClass: {'span-grey': true}}
+					}
+				},
+				otherOptions: {
+					subList: {
+						items: [{title: '我的订单进度', navigateRight: true, rightWidget: {}},
+								{title: '我的银行卡', navigateRight: true, rightWidget: {}},
+								{title: '联系我们', navigateRight: true, rightWidget: {}},
+								{title: '我的二维码', navigateRight: true, rightWidget: {}}
+						]
 					}
 				},
 				footerNavData: {
@@ -107,17 +138,14 @@
 			}
 		},
 		methods: {
-			billTotal: function(){},
 			goView: function(){},
-			orderTotal: function(){},
-			orderDetail: function(){},
 			otherOptions: function(){}
 		},
 		components: {
 			'header-search-nav': HeaderSearchNav,
 			'footer-nav': FooterNav,
 			'content-panel': ContentPanel,
-//			'sub-list': SubList
+			'sub-list': SubList
 		},
 		created() {
 			this.token_g = fun.existToken()
