@@ -3,6 +3,7 @@ import router from './router.js'
 //import jQuery from 'jquery'
 import MuiCss from '../css/mui.min.css'
 import MuiJs from '../js/mui.min.js'
+import SwiperCss from '../css/lib/swiper.min.css'
 import CustomCss from '../css/custom/custom.css'
 //import AjaxFun from '../js/common/ajaxFun.js'
 //require('../js/common/ajaxFun.js')

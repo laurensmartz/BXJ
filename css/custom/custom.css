@@ -175,6 +175,9 @@ input{
 	color: red;
 	line-height: 24px;
 }
+#index .nav-regist{
+	margin: 20px auto;
+}
 .mui-navigate-right.custom{
 	display: -webkit-box;
 	display: flex;
@@ -709,8 +712,23 @@ body.custom-body-white{
 .p-t-100{
 	padding-top: 100px;
 }
+.w-10per{
+	width: 10%;
+}
+.w-20per{
+	width: 20%;
+}
+.w-25per{
+	width: 25%;
+}
+.w-30per{
+	width: 30%;
+}
 .w-60per{
 	width: 60%;
+}
+.w-70per{
+	width: 70%;
 }
 .bg-deepskyblue{
 	background-color: deepskyblue;
@@ -733,6 +751,9 @@ body.custom-body-white{
 	clear: both;
 }
 /*  sublist.js  */
+.span-fd7162{
+	color: #fd7162
+}
 .span-white{
 	color: #FFFFFF;
 }
@@ -763,8 +784,14 @@ body.custom-body-white{
 .f-s-16{
 	font-size: 16px;
 }
+.text-left{
+	text-align: left;
+}
 .text-center{
 	text-align: center;
+}
+.text-indent{
+	text-indent: 2em;
 }
 .sub-list .minus-width{
 	width: 30%;
