@@ -3,7 +3,9 @@ import Router from 'vue-router'
 import BundleCard from './components/bundle_card.vue'
 import Login from './components/views/login.vue'
 import Index from './components/views/index.vue'
+import Message from './components/views/message.vue'
 import Mine from './components/views/mine.vue'
+import Setting from './components/views/setting.vue'
 import fun from '../js/common/fun.js'
 //import MuiJs from '../js/mui.min.js'
 //import AjaxFun from '../js/common/ajaxFun.js'
@@ -18,7 +20,7 @@ var router =  new Router({
   		component: Index,
   		beforeEnter: (to, from, next) => {
   			existToken(next)
-      	}
+      }
   	},
   	{
   		path: '/login',
@@ -27,11 +29,11 @@ var router =  new Router({
   		beforeEnter: function(to, from, next){
   			var token_g = fun.existToken()
 
-			if(token_g){
-				next('/mine')			
-			} else {
-				next()
-			}
+				if(token_g){
+					next('/mine')			
+				} else {
+					next()
+				}
   		}
   	},
   	{
@@ -40,12 +42,28 @@ var router =  new Router({
   		component: BundleCard
   	},
   	{
-		path: '/mine',
-		name: 'mine',
-		component: Mine,
-		beforeEnter: (to, from, next) => {
-			existToken(next)
-		}
+			path: '/mine',
+			name: 'mine',
+			component: Mine,
+			beforeEnter: (to, from, next) => {
+				existToken(next)
+			}
+  	},
+  	{
+  		path: '/setting',
+  		name: 'setting',
+  		component: Setting,
+  		beforeEnter: (to, from, next) => {
+				existToken(next)
+			}
+  	},
+  	{
+  		path: '/message',
+  		name: 'message',
+  		component: Message,
+  		beforeEnter: (to, from, next) => {
+				existToken(next)
+			}
   	}
   ]
 })

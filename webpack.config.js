@@ -17,11 +17,12 @@ module.exports = {
 			{test: /\.vue$/, loader: 'vue-loader'},
 			{test: /\.js$/, loader: 'babel-loader'},
 			{test: /\.(eot|ttf)$/, loader: 'file-loader'},
-			{test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}
+			{test: /\.(png|jpg|gif)$/, loader: 'url-loader?limit=8192'}
 		]
 	},
 	devtool: 'eval-source-map',
 	devServer: {
+		host: '0.0.0.0',  //使局域网内的设备都可访问
 //		contentBase: './views_vue',
 		inline: true //实时刷新
 //		hot: true

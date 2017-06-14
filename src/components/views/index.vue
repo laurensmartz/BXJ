@@ -1,9 +1,9 @@
 <template>
 	<div id="index">
-		<header-search-nav :header-nav-data="headerNavData"></header-search-nav>
+		<header-search-nav :header-nav-data="headerNavData" v-on:click="headerNavClick"></header-search-nav>
 		<div class="custom-container m-t-34">
 			<slide-banner :slide-banner-data="slideBannerData"></slide-banner>
-			<nav-icon :nav-icon-text="navIconText"></nav-icon>
+			<nav-icon :nav-icon-text="navIconText" v-on:click="comingSoon"></nav-icon>
 			<div style="clear: both;"></div>
 			<div class="ad-xbkb">
 				<div class="ad-header">
@@ -56,6 +56,7 @@
 	import service from '../../../js/common/service.config.js'
 	import api from '../../../js/common/api.config.js'
 	import Swiper from '../../../js/lib/swiper.min.js'
+	import Bus from '../../bus.js'
 	export default {
 		data() {
 			return {
@@ -91,15 +92,30 @@
 				hotRecommendShow: false
 			}		
 		},
+		methods: {
+			headerNavClick: function(target){
+				switch(target){
+					case 'leftIcon':
+						this.comingSoon()
+						break
+					case 'rightIcon':
+						window.location.href = '#/message'
+						break
+				}
+			},
+			comingSoon: function(){
+				mui.alert('该功能暂未开放，敬请期待!')
+			}
+		},
 		created () {
 	    	// 组件创建完后获取数据，
 	    	// 此时 data 已经被 observed 了
-	    	/*console.log('aaaa')
-	    	mui.ready(function(){
-	    		console.log('mui ready')
-	    	})*/
 	    	//获取token
 	    	this.token_g = fun.existToken()
+	    	/*var vm = this
+	    	Bus.$on('token_g', function(token_g){
+	    		vm.token_g = token_g
+	    	})*/
 		},
 		mounted () {
 			//激活slider
@@ -135,7 +151,7 @@
 							function success(data){
 								if(data.code == 1){
 									var regionId = data.data.region_id.region_id
-									console.log(regionId)
+//									console.log(regionId)
 									
 									//首页热门分期
 									var hotStageUrl = service.config.url + api.config.hotStage
@@ -145,7 +161,7 @@
 									}
 									
 									var requestData = ajaxFun.requestData(originData, 1, vm.token_g)
-									console.log(requestData)
+//									console.log(requestData)
 									ajaxFun.common(hotStageUrl, 'POST', requestData, 'json', successHotStage, ajaxFun.callBack.error,
 										ajaxFun.callBack.complete, ajaxFun.callBack.beforeSend)
 									

@@ -60,8 +60,8 @@
 		},
 		beforeDestroy() {
 //			console.log(this.token)
-			/*console.log('destory')
-			Bus.$emit('id-selected', 111)*/
+//			console.log('destory')
+//			Bus.$emit('id-selected', 111)
 		}
 	}
 </script>

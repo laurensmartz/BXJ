@@ -36,11 +36,38 @@
 	export default {
 		props: ['subListData'],
 		methods: {
-			rightClick: function(){
-				console.log('rightClick')
+			//右侧元素点击事件
+			rightClick: function(event){
+				//获取事件元素
+				var target = event.target
+				//获取需要执行函数名
+				var funName = target.dataset.rightFun
+				//匹配执行方法
+				switch(funName){
+					case 'obtainValidCode':
+						this.$emit('click', target, funName)
+						break
+					case 'showCityList':
+						this.$emit('click', null, funName)
+						break
+					case 'showBankList':
+						this.$emit('click', null, funName)
+						break
+					default:
+				}
 			},
-			itemClick: function(){
-				console.log('itemClick')
+			//点击列表
+			itemClick: function(arg1, arg2, arg3){
+	//			console.log(event.target.id)
+				this.$emit('click', arg1, arg2, arg3)
+				/*var srcEle = event.srcElement,
+					srcId = srcEle.getAttribute('id')*/
+			},
+			changeImg: function(event){
+				this.$emit('change', event.target)
+			},
+			inputBlur: function(){
+				this.$emit('blur')
 			}
 		}
 	}

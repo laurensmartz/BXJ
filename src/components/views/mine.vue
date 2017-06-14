@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<header-search-nav :header-nav-data="headerNavData"></header-search-nav>
+		<header-search-nav :header-nav-data="headerNavData" v-on:click="iconClick"></header-search-nav>
 		<!--内容容器-->
 		<section v-if="minePanel" class="m-t-35 custom-container">				
 			<!--页面头部-->
@@ -138,6 +138,25 @@
 			}
 		},
 		methods: {
+			iconClick: function(src){
+				switch(src){
+					case 'leftIcon':
+						goSetting()
+						break
+					case 'rightIcon':
+						goMessage()
+						break
+					default:
+						console.log('fun not exist')
+				}
+				//跳转到设置页
+				function goSetting(){
+					window.location.href = '#/setting'
+				}
+				function goMessage(){
+					window.location.href = '#/message'
+				}
+			},
 			goView: function(){},
 			otherOptions: function(){}
 		},
@@ -149,7 +168,7 @@
 		},
 		created() {
 			this.token_g = fun.existToken()
-			console.log(this.token_g)
+//			console.log(this.token_g)
 			var vm = this
 			if(ajaxFun.common){				
 				//设置请求url
@@ -164,7 +183,7 @@
 				ajaxFun.common(url, 'POST', requestData, 'json', success, error, complete, beforeSend)
 				//请求成功回调函数
 				function success(data){
-					console.log(data)
+//					console.log(data)
 					if(data.code == 1){
 						//会员ID
 						vm.mineInfo.mobile = data.data.member_id
@@ -210,13 +229,14 @@
 				console.log('ajaxFun.common not exist')
 			}
 		},
-		/*mounted() {
+		mounted() {
 //			console.log(this.token)
 //			console.log('mine bus')
-			Bus.$on('id-selected', function (id) {
-			  console.log('token' + id)
-			})
-		}*/
+//			Bus.$emit('token_g', this.token_g)
+		},
+		beforeDestroy(){
+//			Bus.$emit('token_g', this.token_g)
+		}
 	}	
 </script>
 

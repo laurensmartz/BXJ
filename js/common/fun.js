@@ -1,3 +1,4 @@
+import EXIF from './exif.js'
 var fun = {
 	//退出登入
 	loginOut: function(){
@@ -151,4 +152,4 @@ var fun = {
 		}		
 	}
 }
-module.exports = fun
+export default fun

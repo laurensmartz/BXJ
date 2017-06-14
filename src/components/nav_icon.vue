@@ -21,13 +21,17 @@
 			</div>
 			<div class="nav-icon-item">
 				<div class="nav-icon-avator">
-					<img src="../../views/images/nav-icon/phone.png"/>
+					<a v-on:click="comingSoon">
+						<img src="../../views/images/nav-icon/phone.png"/>
+					</a>					
 				</div>
 				<span>{{ navIconText[3] }}</span>
 			</div>
 			<div class="nav-icon-item">
 				<div class="nav-icon-avator">
-					<img src="../../views/images/nav-icon/money.png"/>
+					<a v-on:click="comingSoon">
+						<img src="../../views/images/nav-icon/money.png"/>						
+					</a>			
 				</div>
 				<span>{{ navIconText[4] }}</span>
 			</div>
@@ -37,7 +41,12 @@
 
 <script>
 	export default {
-		props: ['navIconText']
+		props: ['navIconText'],
+		methods: {
+			comingSoon: function(){
+				this.$emit('click')
+			}
+		}
 	}
 </script>
 

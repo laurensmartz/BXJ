@@ -211,13 +211,13 @@ var ajaxFun = {
 		error: function(){
 			message.connError()				
 		},
-		complete: function(){
-			/*vm.loading = false
-			vm.preventTouchMask = false*/
+		complete: function(vm){
+			vm.loading = false
+			vm.preventTouchMask = false
 		},
-		beforeSend: function(){
-			/*vm.loading = true
-			vm.preventTouchMask = true*/
+		beforeSend: function(vm){
+			vm.loading = true
+			vm.preventTouchMask = true
 		}
 	},
 	//获取验证码
